@@ -12,8 +12,7 @@ static bool gatewayAuthorize(const char *key, double amount)
     return key[0] != '\0' && amount > 0.0;
 }
 
-/* Autoriza o pagamento com a chave do gateway e apaga a chave da memória logo depois do uso.
-   A chave agora vem da variavel de ambiente PAYMENT_KEY e nao fica mais escrita no codigo. */
+/* Autoriza o pagamento com a chave do gateway e apaga a chave da memória logo depois do uso. */
 bool processPayment(double amount)
 {
     char key[KEY_SIZE];
@@ -22,7 +21,7 @@ bool processPayment(double amount)
 
     chave = getenv("PAYMENT_KEY");
 
-    /* se a variavel nao existir, nao tem chave e o pagamento e recusado */
+    // pega a chave do ambiente, se nao tiver nao paga
     if (chave == NULL)
     {
         return false;
@@ -30,7 +29,7 @@ bool processPayment(double amount)
 
     snprintf(key, sizeof key, "%s", chave);
     authorized = gatewayAuthorize(key, amount);
-    /* explicit_bzero no lugar do memset, pq o compilador pode tirar o memset na otimizacao */
+    // memset podia ser removido pelo compilador
     explicit_bzero(key, sizeof key);
     return authorized;
 }
